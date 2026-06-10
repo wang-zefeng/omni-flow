@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { generateAI } from "./ai-service";
 import { createServerAuth } from "./server/auth";
 import { createOpsIntegrationRouter } from "./server/opsIntegration";
+import { createTableUploadRouter } from "./server/tableUpload";
 
 dotenv.config();
 dotenv.config({ path: ".env.local", override: true });
@@ -18,7 +19,7 @@ app.use((_req, res, next) => {
   next();
 });
 
-const PORT = Number.parseInt(process.env.PORT || "3000", 10) || 3000;
+const PORT = Number.parseInt(process.env.PORT || "3001", 10) || 3001;
 const APP_DATA_DIR = process.env.APP_DATA_DIR || path.join(process.cwd(), ".data");
 const APP_STATE_FILE = path.join(APP_DATA_DIR, "app-state.json");
 const MAX_WORKFLOW_LOGS = Number.parseInt(process.env.MAX_WORKFLOW_LOGS || "50", 10) || 50;
@@ -426,6 +427,7 @@ app.post("/api/auth/login", auth.loginHandler);
 app.post("/api/auth/logout", auth.logoutHandler);
 app.use("/api", auth.requireApiAccess);
 app.use("/api", createOpsIntegrationRouter({ appDataDir: APP_DATA_DIR }));
+app.use("/api", createTableUploadRouter());
 
 // API Route 2: Get active platform data
 app.get("/api/platform-data", (req, res) => {

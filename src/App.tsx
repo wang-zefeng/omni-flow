@@ -10,6 +10,7 @@ import GeneralHRTab from "./components/GeneralHRTab";
 import MiddlePlatformAssistantTab from "./components/MiddlePlatformAssistantTab";
 import ImportMappingModal from "./components/ImportMappingModal";
 import TableParsedBoardTab from "./components/TableParsedBoardTab";
+import type { UploadedTableBoardData } from "./utils/tableUploadApi";
 import UnqWebsiteLogo from "./components/UnqWebsiteLogo";
 import OperationsIntegrationTab from "./components/OperationsIntegrationTab";
 import { withAdminToken } from "./utils/adminAuth";
@@ -48,21 +49,7 @@ export default function App() {
   const [sandboxFinanceLedgers, setSandboxFinanceLedgers] = useState<FinanceLedger[]>([]);
 
   // Persistent user raw uploaded Excel sheet storage for literal visual rendering
-  const [uploadedFileBoardData, setUploadedFileBoardData] = useState<{
-    fileName: string;
-    dataType: "platforms" | "supply_chain" | "finance" | "custom";
-    headers: string[];
-    rows: any[];
-    sheets?: {
-      name: string;
-      headers: string[];
-      rows: any[];
-      dailySeries?: any[];
-      profile?: any;
-    }[];
-    activeSheetIndex?: number;
-    importedAt: string;
-  } | null>(null);
+  const [uploadedFileBoardData, setUploadedFileBoardData] = useState<UploadedTableBoardData | null>(null);
 
   // Agent Natural Language dialogue state
   const [agentInstruction, setAgentInstruction] = useState("");
@@ -1262,6 +1249,7 @@ export default function App() {
           ) : activeTab === "table_parsed_board" ? (
             <TableParsedBoardTab
               uploadedFileBoardData={uploadedFileBoardData}
+              onBoardDataChange={setUploadedFileBoardData}
               onTriggerImport={() => setIsImportModalOpen(true)}
               onLoadTemplate={(type) => {
                 let fileName = "";

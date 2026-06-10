@@ -50,8 +50,9 @@ export interface TimeSeriesPoint {
 const MONEY_WORDS = ["金额", "销售", "流水", "营收", "收入", "GMV", "货值", "成本", "费用", "退款", "利润", "毛利", "净利", "支出", "预算", "客单", "回款", "price", "amount", "sales", "revenue", "gmv", "cost", "fee", "refund", "profit", "income", "expense", "budget"];
 const RATIO_WORDS = ["率", "占比", "比例", "转化", "ROI", "毛利率", "退款率", "达成率", "完成率", "rate", "ratio", "percent", "conversion", "ctr", "cvr", "roi", "%"];
 const DATE_WORDS = ["日期", "时间", "月份", "年月", "日", "周", "季度", "date", "time", "month", "day", "week", "quarter"];
+const NUMBER_WORDS = ["销量", "订单数", "订单", "库存", "访客数", "访客", "点击数", "点击", "件数", "数量", "volume", "orders", "stock", "inventory", "visitors", "clicks", "quantity"];
 const ID_WORDS = ["id", "编号", "编码", "货号", "sku", "spu", "订单号", "单号", "工号", "employee id", "code"];
-const DIMENSION_WORDS = ["名称", "姓名", "部门", "渠道", "平台", "店铺", "商品", "产品", "品名", "类目", "供应商", "仓库", "城市", "区域", "活动", "项目", "负责人", "状态", "name", "category", "channel", "platform", "department", "supplier", "warehouse", "region", "owner", "status"];
+const DIMENSION_WORDS = ["名称", "姓名", "部门", "渠道", "平台", "店铺", "商品", "产品", "品名", "品牌", "类目", "供应商", "仓库", "城市", "区域", "活动", "项目", "负责人", "状态", "name", "category", "channel", "platform", "brand", "department", "supplier", "warehouse", "region", "owner", "status"];
 
 const DOMAIN_KEYWORDS: Record<ImportedDataType, string[]> = {
   platforms: ["店铺", "渠道", "平台", "订单", "访客", "转化", "GMV", "uv", "pv", "客诉", "客服", "流量", "成交"],
@@ -169,6 +170,7 @@ function inferColumnRole(
   if (includesAny(key, DATE_WORDS) || dateRate >= 0.6) return "date";
   if (includesAny(key, RATIO_WORDS)) return "ratio";
   if (includesAny(key, MONEY_WORDS)) return "money";
+  if (includesAny(key, NUMBER_WORDS)) return "number";
   if (numericRate >= 0.75) return "number";
   if (includesAny(key, DIMENSION_WORDS)) return "dimension";
   if (stats.distinctCount <= Math.max(20, stats.rowCount * 0.7)) return "dimension";
@@ -366,4 +368,280 @@ export function summarizeSheets(sheets: { name: string; headers: string[]; rows:
       timeSeriesPoints: sheet.dailySeries?.length || 0,
     };
   });
+}
+
+export type DiagnosticSeverity = "info" | "warning" | "danger";
+
+export interface FieldRecognition {
+  name: string;
+  type: ColumnRole;
+  reason: string;
+}
+
+export interface AmountMetrics {
+  field: string;
+  total: number;
+  average: number;
+  max: number;
+  min: number;
+}
+
+export interface TableAnalysisMetrics {
+  validRecordCount: number;
+  totalFieldCount: number;
+  numericFieldCount: number;
+  textDimensionCount: number;
+  emptyCellRatio: number;
+  duplicateRecordCount: number;
+  amount?: AmountMetrics;
+}
+
+export interface TopDimensionContribution {
+  dimension: string;
+  value: string;
+  amount: number;
+  recordCount: number;
+}
+
+export interface DateTrendPoint {
+  date: string;
+  amount: number;
+  recordCount: number;
+}
+
+export interface TableDiagnostic {
+  id: string;
+  type: string;
+  severity: DiagnosticSeverity;
+  description: string;
+  fields: string[];
+}
+
+export interface TableAnalysisResult {
+  fields: FieldRecognition[];
+  metrics: TableAnalysisMetrics;
+  topDimensions: TopDimensionContribution[];
+  dateTrend: DateTrendPoint[];
+  diagnostics: TableDiagnostic[];
+}
+
+function getRecognitionReason(column: ColumnProfile): string {
+  if (column.role === "date") {
+    return includesAny(column.key, DATE_WORDS)
+      ? "字段名命中日期/时间规则"
+      : `内容日期占比 ${Math.round((column.dateCount / Math.max(column.nonEmptyCount, 1)) * 100)}%`;
+  }
+  if (column.role === "ratio") return "字段名命中比例/转化率规则";
+  if (column.role === "money") return "字段名命中金额/销售/成本规则";
+  if (column.role === "number") {
+    return includesAny(column.key, NUMBER_WORDS)
+      ? "字段名命中销量/订单/库存等数值规则"
+      : `内容数值占比 ${Math.round((column.numericCount / Math.max(column.nonEmptyCount, 1)) * 100)}%`;
+  }
+  if (column.role === "id") return "字段名命中 ID/SKU/编码规则";
+  if (column.role === "empty") return "整列为空";
+  return includesAny(column.key, DIMENSION_WORDS)
+    ? "字段名命中文本维度规则"
+    : "内容以文本或离散值为主";
+}
+
+function countDuplicateRows(headers: string[], rows: any[]): number {
+  const seen = new Set<string>();
+  let duplicates = 0;
+  rows.forEach((row) => {
+    const signature = JSON.stringify(headers.map((header) => normalizeCellValue(row?.[header])));
+    if (seen.has(signature)) duplicates += 1;
+    else seen.add(signature);
+  });
+  return duplicates;
+}
+
+function buildTopDimensions(
+  rows: any[],
+  profile: TableProfile,
+  metricKey: string | undefined
+): TopDimensionContribution[] {
+  if (profile.dimensionFields.length === 0) return [];
+
+  const contributions: TopDimensionContribution[] = [];
+  profile.dimensionFields.slice(0, 5).forEach((dimension) => {
+    const groups = new Map<string, { amount: number; recordCount: number }>();
+    rows.forEach((row) => {
+      const value = normalizeText(row?.[dimension]) || "未填写";
+      const current = groups.get(value) || { amount: 0, recordCount: 0 };
+      current.amount += metricKey ? parseNumericValue(row?.[metricKey]) || 0 : 0;
+      current.recordCount += 1;
+      groups.set(value, current);
+    });
+
+    Array.from(groups.entries())
+      .map(([value, summary]) => ({ dimension, value, ...summary }))
+      .sort((left, right) =>
+        metricKey
+          ? right.amount - left.amount || right.recordCount - left.recordCount
+          : right.recordCount - left.recordCount
+      )
+      .slice(0, 5)
+      .forEach((item) => contributions.push(item));
+  });
+
+  return contributions.slice(0, 25);
+}
+
+function buildDateTrend(rows: any[], profile: TableProfile, metricKey: string | undefined): DateTrendPoint[] {
+  if (!profile.primaryDate) return [];
+  const groups = new Map<string, { amount: number; recordCount: number }>();
+  rows.forEach((row) => {
+    const date = normalizeText(row?.[profile.primaryDate as string]);
+    if (!date) return;
+    const current = groups.get(date) || { amount: 0, recordCount: 0 };
+    current.amount += metricKey ? parseNumericValue(row?.[metricKey]) || 0 : 0;
+    current.recordCount += 1;
+    groups.set(date, current);
+  });
+  return Array.from(groups.entries())
+    .map(([date, summary]) => ({ date, ...summary }))
+    .sort((left, right) => left.date.localeCompare(right.date, "zh-CN", { numeric: true }));
+}
+
+function buildDiagnostics(
+  headers: string[],
+  rows: any[],
+  profile: TableProfile,
+  duplicateRecordCount: number,
+  amountField: string | undefined
+): TableDiagnostic[] {
+  const diagnostics: TableDiagnostic[] = [
+    {
+      id: "structure-summary",
+      type: "structure",
+      severity: "info",
+      description: `已按规则识别 ${headers.length} 个字段和 ${rows.length} 条有效记录。`,
+      fields: [],
+    },
+  ];
+
+  const totalCells = Math.max(rows.length * headers.length, 1);
+  const emptyRatio = profile.missingCells / totalCells;
+  if (emptyRatio >= 0.4) {
+    diagnostics.push({
+      id: "missing-cells-danger",
+      type: "missing_values",
+      severity: "danger",
+      description: `空值比例达到 ${(emptyRatio * 100).toFixed(1)}%，分析结果可能失真。`,
+      fields: profile.columns.filter((column) => column.missingCount > rows.length * 0.4).map((column) => column.key),
+    });
+  } else if (emptyRatio >= 0.1) {
+    diagnostics.push({
+      id: "missing-cells-warning",
+      type: "missing_values",
+      severity: "warning",
+      description: `空值比例为 ${(emptyRatio * 100).toFixed(1)}%，建议检查缺失字段。`,
+      fields: profile.columns.filter((column) => column.missingCount > 0).map((column) => column.key),
+    });
+  }
+
+  if (duplicateRecordCount > 0) {
+    const duplicateRatio = duplicateRecordCount / Math.max(rows.length, 1);
+    diagnostics.push({
+      id: "duplicate-rows",
+      type: "duplicate_rows",
+      severity: duplicateRatio >= 0.2 ? "danger" : "warning",
+      description: `检测到 ${duplicateRecordCount} 条重复记录，占比 ${(duplicateRatio * 100).toFixed(1)}%。`,
+      fields: headers,
+    });
+  }
+
+  profile.columns
+    .filter((column) => ["number", "money", "ratio"].includes(column.role) && column.nonEmptyCount > 0)
+    .forEach((column) => {
+      const zeroCount = rows.reduce(
+        (count, row) => count + (parseNumericValue(row?.[column.key]) === 0 ? 1 : 0),
+        0
+      );
+      if (zeroCount / column.nonEmptyCount >= 0.3) {
+        diagnostics.push({
+          id: `zero-values-${column.key}`,
+          type: "zero_values",
+          severity: "warning",
+          description: `${column.key} 中有 ${zeroCount} 条零值，建议确认是否代表缺失或真实业务值。`,
+          fields: [column.key],
+        });
+      }
+    });
+
+  if (amountField) {
+    const values = rows
+      .map((row) => parseNumericValue(row?.[amountField]))
+      .filter((value): value is number => value !== null)
+      .sort((left, right) => left - right);
+    if (values.length >= 4) {
+      const q1 = values[Math.floor((values.length - 1) * 0.25)];
+      const q3 = values[Math.floor((values.length - 1) * 0.75)];
+      const iqr = q3 - q1;
+      const lowThreshold = q1 - iqr * 1.5;
+      const highThreshold = q3 + iqr * 1.5;
+      const highCount = values.filter((value) => value > highThreshold).length;
+      const lowCount = values.filter((value) => value < lowThreshold).length;
+      if (highCount > 0) {
+        diagnostics.push({
+          id: "amount-high-outlier",
+          type: "amount_outlier",
+          severity: "danger",
+          description: `${amountField} 检测到 ${highCount} 条异常高值，建议核对大额记录。`,
+          fields: [amountField],
+        });
+      }
+      if (lowCount > 0) {
+        diagnostics.push({
+          id: "amount-low-outlier",
+          type: "amount_outlier",
+          severity: "warning",
+          description: `${amountField} 检测到 ${lowCount} 条异常低值，建议核对负数或极低金额。`,
+          fields: [amountField],
+        });
+      }
+    }
+  }
+
+  return diagnostics;
+}
+
+export function analyzeTableData(headers: string[], rows: any[]): TableAnalysisResult {
+  const profile = profileTable(headers, rows);
+  const validRows = rows.filter((row) => headers.some((header) => normalizeText(row?.[header]) !== ""));
+  const duplicateRecordCount = countDuplicateRows(headers, validRows);
+  const amountField = profile.moneyFields[0];
+  const metricField = amountField || profile.primaryMetric;
+  const amountColumn = amountField
+    ? profile.columns.find((column) => column.key === amountField)
+    : undefined;
+
+  return {
+    fields: profile.columns.map((column) => ({
+      name: column.key,
+      type: column.role,
+      reason: getRecognitionReason(column),
+    })),
+    metrics: {
+      validRecordCount: validRows.length,
+      totalFieldCount: headers.length,
+      numericFieldCount: profile.numericFields.length,
+      textDimensionCount: profile.dimensionFields.length,
+      emptyCellRatio: Math.max(0, 1 - profile.fillRate / 100),
+      duplicateRecordCount,
+      amount: amountColumn
+        ? {
+            field: amountColumn.key,
+            total: amountColumn.sum,
+            average: amountColumn.avg,
+            max: amountColumn.max,
+            min: amountColumn.min,
+          }
+        : undefined,
+    },
+    topDimensions: buildTopDimensions(validRows, profile, metricField),
+    dateTrend: buildDateTrend(validRows, profile, metricField),
+    diagnostics: buildDiagnostics(headers, validRows, profile, duplicateRecordCount, amountField),
+  };
 }

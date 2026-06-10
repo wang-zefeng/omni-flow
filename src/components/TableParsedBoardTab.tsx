@@ -16,6 +16,7 @@ import {
 } from "recharts";
 import ReactMarkdown from "react-markdown";
 import {
+  analyzeTableData,
   aggregateByDimension,
   buildRowTimeSeries,
   parseNumericValue,
@@ -24,6 +25,16 @@ import {
   type ImportedDataType,
   type TableProfile,
 } from "../utils/tableAnalysis";
+import {
+  deleteTableRecord,
+  fetchTableRecord,
+  fetchTableRecords,
+  recordToBoardData,
+  uploadTableFile,
+  type TableUploadRecordSummary,
+  type UploadedTableBoardData,
+} from "../utils/tableUploadApi";
+import { formatFileSize, TableAnalysisSummary, UploadHistoryPanel } from "./TableUploadPanels";
 import {
   buildOperatingSnapshot,
   createClosedLoopTasks,
@@ -35,30 +46,8 @@ import {
 } from "../utils/opsClosedLoop";
 
 interface TableParsedBoardTabProps {
-  uploadedFileBoardData: {
-    fileName: string;
-    dataType: ImportedDataType;
-    headers: string[];
-    rows: any[];
-    sheets?: {
-      name: string;
-      headers: string[];
-      rows: any[];
-      dailySeries?: {
-        date: string;
-        value?: number;
-        sku: string;
-        name: string;
-        sales?: number;
-        uv: number;
-        buyers: number;
-        cr: number;
-      }[];
-      profile?: TableProfile;
-    }[];
-    activeSheetIndex?: number;
-    importedAt: string;
-  } | null;
+  uploadedFileBoardData: UploadedTableBoardData | null;
+  onBoardDataChange: (data: UploadedTableBoardData | null) => void;
   onTriggerImport: () => void;
   onLoadTemplate: (type: "platforms" | "supply_chain" | "finance") => void;
   onLoadMappedDataToSandbox: () => void;
@@ -66,6 +55,7 @@ interface TableParsedBoardTabProps {
 
 export default function TableParsedBoardTab({
   uploadedFileBoardData,
+  onBoardDataChange,
   onTriggerImport,
   onLoadTemplate,
   onLoadMappedDataToSandbox,
@@ -94,6 +84,12 @@ export default function TableParsedBoardTab({
   const [customQuestionInput, setCustomQuestionInput] = useState<string>("");
   const [closedLoopTasks, setClosedLoopTasks] = useState<ClosedLoopTask[]>([]);
   const [reviewDrafts, setReviewDrafts] = useState<Record<string, string>>({});
+  const apiFileInputRef = useRef<HTMLInputElement | null>(null);
+  const [uploadRecords, setUploadRecords] = useState<TableUploadRecordSummary[]>([]);
+  const [isHistoryLoading, setIsHistoryLoading] = useState(true);
+  const [historyError, setHistoryError] = useState("");
+  const [uploadError, setUploadError] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -116,6 +112,80 @@ export default function TableParsedBoardTab({
       return profileTable(headers, []);
     }
   }, [headers, rows, currentSheet]);
+  const standardizedAnalysis = useMemo(
+    () => uploadedFileBoardData?.serverAnalysis || analyzeTableData(headers, rows),
+    [uploadedFileBoardData?.serverAnalysis, headers, rows]
+  );
+
+  const refreshUploadRecords = async () => {
+    setIsHistoryLoading(true);
+    try {
+      setUploadRecords(await fetchTableRecords());
+      setHistoryError("");
+    } catch (error) {
+      setHistoryError(error instanceof Error ? error.message : "无法加载历史记录。");
+    } finally {
+      setIsHistoryLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    void refreshUploadRecords();
+  }, []);
+
+  const handleApiFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    if (!/\.(xlsx|xls|csv|json)$/i.test(file.name)) {
+      setUploadError("不支持的文件格式，仅支持 .xlsx、.xls、.csv、.json。");
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadError("");
+    try {
+      const record = await uploadTableFile(file);
+      onBoardDataChange(recordToBoardData(record));
+      await refreshUploadRecords();
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "上传失败，请稍后重试。");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRestoreRecord = async (id: string) => {
+    setUploadError("");
+    try {
+      const record = await fetchTableRecord(id);
+      onBoardDataChange(recordToBoardData(record));
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "历史记录恢复失败。");
+    }
+  };
+
+  const handleDeleteRecord = async (id: string) => {
+    setHistoryError("");
+    try {
+      await deleteTableRecord(id);
+      if (uploadedFileBoardData?.fileId === id) onBoardDataChange(null);
+      await refreshUploadRecords();
+    } catch (error) {
+      setHistoryError(error instanceof Error ? error.message : "历史记录删除失败。");
+    }
+  };
+
+  const uploadInput = (
+    <input
+      ref={apiFileInputRef}
+      type="file"
+      accept=".xlsx,.xls,.csv,.json"
+      onChange={handleApiFileChange}
+      className="hidden"
+      aria-label="上传 Excel、CSV 或 JSON 文件"
+    />
+  );
   const sheetSummaries = useMemo(() => {
     try {
       return summarizeSheets(sheets);
@@ -545,6 +615,7 @@ export default function TableParsedBoardTab({
   if (!uploadedFileBoardData) {
     return (
       <div className="space-y-6">
+        {uploadInput}
         <div className="bg-white p-8 rounded-xl border border-slate-100 shadow-xs text-center max-w-2xl mx-auto my-12 space-y-6">
           <div className="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto shadow-sm">
             <Lucide.FileSpreadsheet className="w-8 h-8 stroke-1.5 animate-pulse" />
@@ -553,19 +624,35 @@ export default function TableParsedBoardTab({
           <div className="space-y-2">
             <h2 className="text-xl font-bold text-slate-800">暂未导入本地表格文件</h2>
             <p className="text-sm text-slate-500 max-w-md mx-auto leading-relaxed">
-              为了提供针对您自己真实数据的深度计算看板，中台能够解析 Excel、CSV、TSV、JSON 等文件，并自动识别运营、供应链、财务、人事、市场、客服、CRM、项目等业务表结构。
+              为了提供针对您自己真实数据的深度计算看板，中台能够解析 Excel、CSV、JSON 文件，并通过规则自动识别业务表结构。
             </p>
           </div>
 
           <div className="pt-4 flex flex-col sm:flex-row justify-center gap-3">
             <button
-              onClick={onTriggerImport}
+              type="button"
+              onClick={() => apiFileInputRef.current?.click()}
+              disabled={isUploading}
               className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
             >
               <Lucide.UploadCloud className="w-4 h-4" />
-              立即导入本地数据表格
+              {isUploading ? "正在上传解析..." : "立即上传并解析"}
+            </button>
+            <button
+              type="button"
+              onClick={onTriggerImport}
+              className="px-6 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <Lucide.SlidersHorizontal className="w-4 h-4" />
+              使用字段映射导入
             </button>
           </div>
+
+          {uploadError ? (
+            <div className="text-xs text-rose-700 bg-rose-50 border border-rose-100 rounded-lg px-3 py-2 text-left">
+              {uploadError}
+            </div>
+          ) : null}
 
           <div className="pt-6 border-t border-slate-100">
             <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-3">无准备好的文件？可点击一键注入标准预制数据体验：</p>
@@ -591,6 +678,13 @@ export default function TableParsedBoardTab({
             </div>
           </div>
         </div>
+        <UploadHistoryPanel
+          records={uploadRecords}
+          loading={isHistoryLoading}
+          error={historyError}
+          onRestore={(id) => void handleRestoreRecord(id)}
+          onDelete={(id) => void handleDeleteRecord(id)}
+        />
       </div>
     );
   }
@@ -691,6 +785,7 @@ export default function TableParsedBoardTab({
 
   return (
     <div className="space-y-6">
+      {uploadInput}
       
       {/* 1. File Upload Hero Banner with Excel worksheets switch tabs */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-xs overflow-hidden">
@@ -703,12 +798,15 @@ export default function TableParsedBoardTab({
               <div className="flex items-center gap-2">
                 <h2 className="text-base font-bold text-slate-800">{fileName}</h2>
                 <span className="text-[10px] bg-emerald-50 border border-emerald-200 text-emerald-700 px-2 py-0.5 rounded-full font-semibold flex items-center gap-1 leading-none">
-                  ● 真实数据已自动解析
+                  {uploadedFileBoardData.status === "failed" ? "解析失败" : "已解析"}
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-1">
                 数据归类: <span className="font-semibold text-slate-600 capitalize">{tableProfile.businessDomainLabel}</span>
                 {" "}| 导入自: {importedAt}
+              </p>
+              <p className="text-[10px] text-slate-400 mt-1">
+                {formatFileSize(uploadedFileBoardData.fileSize)} · {uploadedFileBoardData.rowCount ?? rows.length} 行 × {uploadedFileBoardData.columnCount ?? headers.length} 列 · {uploadedFileBoardData.status === "failed" ? "失败" : "解析完成"}
               </p>
             </div>
           </div>
@@ -723,11 +821,21 @@ export default function TableParsedBoardTab({
             </button>
             
             <button
-              onClick={onTriggerImport}
+              type="button"
+              onClick={() => apiFileInputRef.current?.click()}
+              disabled={isUploading}
               className="px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 hover:text-slate-900 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
             >
               <Lucide.UploadCloud className="w-3.5 h-3.5 text-slate-400" />
-              重新导入表格
+              {isUploading ? "上传中..." : "重新上传表格"}
+            </button>
+            <button
+              type="button"
+              onClick={onTriggerImport}
+              className="px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 hover:text-slate-900 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+            >
+              <Lucide.SlidersHorizontal className="w-3.5 h-3.5 text-slate-400" />
+              字段映射导入
             </button>
           </div>
         </div>
@@ -767,6 +875,23 @@ export default function TableParsedBoardTab({
           </div>
         )}
       </div>
+
+      {uploadError ? (
+        <div className="text-xs text-rose-700 bg-rose-50 border border-rose-100 rounded-lg px-3 py-2">
+          {uploadError}
+        </div>
+      ) : null}
+
+      <TableAnalysisSummary data={uploadedFileBoardData} analysis={standardizedAnalysis} />
+
+      <UploadHistoryPanel
+        records={uploadRecords}
+        loading={isHistoryLoading}
+        error={historyError}
+        activeRecordId={uploadedFileBoardData.fileId}
+        onRestore={(id) => void handleRestoreRecord(id)}
+        onDelete={(id) => void handleDeleteRecord(id)}
+      />
 
       {/* 2. Key Dynamic Aggregate Cards auto-synced with the active Excel Sheet */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
