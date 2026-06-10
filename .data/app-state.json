@@ -1,0 +1,520 @@
+{
+  "savedAt": "2026-06-10T05:42:38.117Z",
+  "platformData": {
+    "summary": {
+      "totalSales": 14085400,
+      "totalOrders": 18520,
+      "b2bSales": 8090000,
+      "b2cSales": 5995400,
+      "lastUpdated": "2026-06-08T09:02:22.904Z"
+    },
+    "platforms": [
+      {
+        "id": "tmall",
+        "name": "天猫旗舰店",
+        "channel": "B2C",
+        "logo": "Tmall",
+        "todaySales": 126475,
+        "monthlySales": 1540800,
+        "conversionRate": 3.42,
+        "activeProducts": 142,
+        "pendingOrders": 416,
+        "unreadMessages": 19,
+        "status": "normal",
+        "syncCount": 2
+      },
+      {
+        "id": "tmall_global",
+        "name": "天猫海外直营店",
+        "channel": "B2C",
+        "logo": "TmallGlobal",
+        "todaySales": 68400,
+        "monthlySales": 990600,
+        "conversionRate": 2.85,
+        "activeProducts": 85,
+        "pendingOrders": 180,
+        "unreadMessages": 5,
+        "status": "normal",
+        "syncCount": 1
+      },
+      {
+        "id": "jd",
+        "name": "京东自营店",
+        "channel": "B2C",
+        "logo": "JD",
+        "todaySales": 110200,
+        "monthlySales": 1254000,
+        "conversionRate": 3.88,
+        "activeProducts": 110,
+        "pendingOrders": 290,
+        "unreadMessages": 11,
+        "status": "normal",
+        "syncCount": 1
+      },
+      {
+        "id": "pinduoduo",
+        "name": "拼多多官方旗舰店",
+        "channel": "B2C",
+        "logo": "Piduoduo",
+        "todaySales": 89400,
+        "monthlySales": 825000,
+        "conversionRate": 4.12,
+        "activeProducts": 190,
+        "pendingOrders": 780,
+        "unreadMessages": 24,
+        "status": "normal",
+        "syncCount": 1
+      },
+      {
+        "id": "douyin",
+        "name": "抖音小店",
+        "channel": "B2C",
+        "logo": "Douyin",
+        "todaySales": 154600,
+        "monthlySales": 1385000,
+        "conversionRate": 2.98,
+        "activeProducts": 48,
+        "pendingOrders": 510,
+        "unreadMessages": 37,
+        "status": "normal",
+        "syncCount": 1
+      },
+      {
+        "id": "b2b_wholesale",
+        "name": "阿里巴巴1688批发通道",
+        "channel": "B2B",
+        "logo": "Alibaba",
+        "todaySales": 310000,
+        "monthlySales": 4850000,
+        "conversionRate": 8.5,
+        "activeProducts": 320,
+        "pendingOrders": 95,
+        "unreadMessages": 12,
+        "status": "normal",
+        "syncCount": 1
+      },
+      {
+        "id": "b2b_offline",
+        "name": "渠道大宗B2B直供系统",
+        "channel": "B2B",
+        "logo": "OfflineB2B",
+        "todaySales": 212500,
+        "monthlySales": 3240000,
+        "conversionRate": 12.4,
+        "activeProducts": 75,
+        "pendingOrders": 28,
+        "unreadMessages": 4,
+        "status": "normal",
+        "syncCount": 1
+      }
+    ]
+  },
+  "workflowLogs": [
+    {
+      "id": "log_1781070158117",
+      "timestamp": "2026-06-10T05:42:38.117Z",
+      "platform": "tmall",
+      "workflow": "customer-reply",
+      "type": "智能客服回复",
+      "status": "success",
+      "summary": "AI 流程 [customer-reply] 成功在 天猫旗舰店 运行。模型输出已打包，可一键发送或同步。"
+    },
+    {
+      "id": "log_1781004238322",
+      "timestamp": "2026-06-09T11:23:58.322Z",
+      "platform": "tmall",
+      "workflow": "customer-reply",
+      "type": "智能客服回复",
+      "status": "success",
+      "summary": "AI 流程 [customer-reply] 成功在 天猫旗舰店 运行。模型输出已打包，可一键发送或同步。"
+    },
+    {
+      "id": "log_1781003913669",
+      "timestamp": "2026-06-09T11:18:33.669Z",
+      "platform": "tmall",
+      "workflow": "customer-reply",
+      "type": "智能客服回复",
+      "status": "success",
+      "summary": "AI 流程 [customer-reply] 成功在 天猫旗舰店 运行。模型输出已打包，可一键发送或同步。"
+    },
+    {
+      "id": "log_1781003416093",
+      "timestamp": "2026-06-09T11:10:16.093Z",
+      "platform": "tmall",
+      "workflow": "customer-reply",
+      "type": "智能客服回复",
+      "status": "success",
+      "summary": "AI 流程 [customer-reply] 成功在 天猫旗舰店 运行。模型输出已打包，可一键发送或同步。"
+    },
+    {
+      "id": "log_1781003266803",
+      "timestamp": "2026-06-09T11:07:46.803Z",
+      "platform": "tmall",
+      "workflow": "customer-reply",
+      "type": "智能客服回复",
+      "status": "success",
+      "summary": "AI 流程 [customer-reply] 成功在 天猫旗舰店 运行。模型输出已打包，可一键发送或同步。"
+    },
+    {
+      "id": "log_1781002893983",
+      "timestamp": "2026-06-09T11:01:33.983Z",
+      "platform": "tmall",
+      "workflow": "customer-reply",
+      "type": "智能客服回复",
+      "status": "success",
+      "summary": "AI 流程 [customer-reply] 成功在 天猫旗舰店 运行。模型输出已打包，可一键发送或同步。"
+    },
+    {
+      "id": "log_1781002655720",
+      "timestamp": "2026-06-09T10:57:35.720Z",
+      "platform": "tmall",
+      "workflow": "customer-reply",
+      "type": "智能客服回复",
+      "status": "success",
+      "summary": "AI 流程 [customer-reply] 成功在 天猫旗舰店 运行。模型输出已打包，可一键发送或同步。"
+    },
+    {
+      "id": "log_1781002624225",
+      "timestamp": "2026-06-09T10:57:04.225Z",
+      "platform": "tmall",
+      "workflow": "customer-reply",
+      "type": "智能客服回复",
+      "status": "success",
+      "summary": "AI 流程 [customer-reply] 成功在 天猫旗舰店 运行。模型输出已打包，可一键发送或同步。"
+    },
+    {
+      "id": "log_1781002529798",
+      "timestamp": "2026-06-09T10:55:29.798Z",
+      "platform": "tmall",
+      "workflow": "customer-reply",
+      "type": "智能客服回复",
+      "status": "success",
+      "summary": "AI 流程 [customer-reply] 成功在 天猫旗舰店 运行。模型输出已打包，可一键发送或同步。"
+    },
+    {
+      "id": "log_1781002487917",
+      "timestamp": "2026-06-09T10:54:47.917Z",
+      "platform": "tmall",
+      "workflow": "customer-reply",
+      "type": "智能客服回复",
+      "status": "success",
+      "summary": "AI 流程 [customer-reply] 成功在 天猫旗舰店 运行。模型输出已打包，可一键发送或同步。"
+    },
+    {
+      "id": "log_1781001914450",
+      "timestamp": "2026-06-09T10:45:14.450Z",
+      "platform": "tmall",
+      "workflow": "customer-reply",
+      "type": "智能客服回复",
+      "status": "success",
+      "summary": "AI 流程 [customer-reply] 成功在 天猫旗舰店 运行。模型输出已打包，可一键发送或同步。"
+    },
+    {
+      "id": "log_1781001392409",
+      "timestamp": "2026-06-09T10:36:32.409Z",
+      "platform": "tmall",
+      "workflow": "customer-reply",
+      "type": "智能客服回复",
+      "status": "success",
+      "summary": "AI 流程 [customer-reply] 成功在 天猫旗舰店 运行。模型输出已打包，可一键发送或同步。"
+    },
+    {
+      "id": "log_1781000927023",
+      "timestamp": "2026-06-09T10:28:47.023Z",
+      "platform": "tmall",
+      "workflow": "customer-reply",
+      "type": "智能客服回复",
+      "status": "success",
+      "summary": "AI 流程 [customer-reply] 成功在 天猫旗舰店 运行。模型输出已打包，可一键发送或同步。"
+    },
+    {
+      "id": "log_1781000889845",
+      "timestamp": "2026-06-09T10:28:09.845Z",
+      "platform": "tmall",
+      "workflow": "customer-reply",
+      "type": "智能客服回复",
+      "status": "success",
+      "summary": "AI 流程 [customer-reply] 成功在 天猫旗舰店 运行。模型输出已打包，可一键发送或同步。"
+    },
+    {
+      "id": "log_1781000873001",
+      "timestamp": "2026-06-09T10:27:53.001Z",
+      "platform": "tmall",
+      "workflow": "customer-reply",
+      "type": "智能客服回复",
+      "status": "success",
+      "summary": "AI 流程 [customer-reply] 成功在 天猫旗舰店 运行。模型输出已打包，可一键发送或同步。"
+    },
+    {
+      "id": "log_1780909342901",
+      "timestamp": "2026-06-08T09:02:22.901Z",
+      "platform": "tmall",
+      "workflow": "data-sync",
+      "type": "Data Sync Engine",
+      "status": "success",
+      "summary": "数据同步成功：已成功抓取并汇总 天猫旗舰店 发货列表、未读和售后纠纷率。当前平台状态: 正常"
+    },
+    {
+      "id": "log_1",
+      "timestamp": "2026-06-08T08:46:24.014Z",
+      "platform": "tmall",
+      "workflow": "customer-reply",
+      "type": "Auto-Reply Draft",
+      "status": "success",
+      "summary": "自动回复顾客问询 (产地问题) 并生成优雅草稿，正在等候客服终审确认。"
+    },
+    {
+      "id": "log_2",
+      "timestamp": "2026-06-08T08:16:24.014Z",
+      "platform": "douyin",
+      "workflow": "marketing-copy",
+      "type": "Video Script Draft",
+      "status": "success",
+      "summary": "天猫618狂欢夜预赛抖音爆款短视频脚本5条自动生成，并根据热词包优化完成。"
+    },
+    {
+      "id": "log_3",
+      "timestamp": "2026-06-08T07:01:24.014Z",
+      "platform": "jd",
+      "workflow": "inventory-replenish",
+      "type": "Replenishment Suggestion",
+      "status": "warning",
+      "summary": "智能警报：检测到京东自营SKU-JD9420销售激增，预估库存在3天内耗尽，已自动发起补货提案。"
+    }
+  ],
+  "supplyChainProducts": [
+    {
+      "id": "sc_1",
+      "sku": "SKU-9420",
+      "name": "冰丝凉感专业防晒衣 (男女同款气动防护系列)",
+      "category": "服装美妆",
+      "warehouseStock": 1840,
+      "transitStock": 650,
+      "safeDOH": 15,
+      "currentVelocity": 120,
+      "factoryLeadTime": 20,
+      "riskLevel": "medium",
+      "supplierName": "浙江义乌织造工厂"
+    },
+    {
+      "id": "sc_2",
+      "sku": "SKU-3114",
+      "name": "奢透黑松露抗老夜间修护乳 (高浓度酵母紧致版)",
+      "category": "面部护肤",
+      "warehouseStock": 240,
+      "transitStock": 900,
+      "safeDOH": 20,
+      "currentVelocity": 65,
+      "factoryLeadTime": 18,
+      "riskLevel": "high",
+      "supplierName": "苏州美妆智造第二车间"
+    },
+    {
+      "id": "sc_3",
+      "sku": "SKU-8842",
+      "name": "多气垫高回弹轻履越野跑鞋 (碳板支撑避震限量款)",
+      "category": "运动鞋靴",
+      "warehouseStock": 520,
+      "transitStock": 280,
+      "safeDOH": 12,
+      "currentVelocity": 85,
+      "factoryLeadTime": 15,
+      "riskLevel": "medium",
+      "supplierName": "福建莆田精密航空鞋靴加工基地"
+    },
+    {
+      "id": "sc_4",
+      "sku": "SKU-1080",
+      "name": "定制款速干无缝健美瑜伽短裤 (塑形微压缩透气系列)",
+      "category": "服装美妆",
+      "warehouseStock": 3200,
+      "transitStock": 1500,
+      "safeDOH": 15,
+      "currentVelocity": 90,
+      "factoryLeadTime": 14,
+      "riskLevel": "low",
+      "supplierName": "广东汕头无缝高密度织染厂"
+    }
+  ],
+  "financeLedgers": [
+    {
+      "id": "fin_1",
+      "platformId": "tmall",
+      "platformName": "天猫官方旗舰店",
+      "salesVolume": 1540800,
+      "refundsVolume": 123800,
+      "adsExpense": 324000,
+      "platformFee": 78500,
+      "logisticsFee": 54000,
+      "netRevenue": 960500,
+      "marginPercent": 62
+    },
+    {
+      "id": "fin_2",
+      "platformId": "jd",
+      "platformName": "京东自营店",
+      "salesVolume": 1254000,
+      "refundsVolume": 74200,
+      "adsExpense": 215000,
+      "platformFee": 104200,
+      "logisticsFee": 85000,
+      "netRevenue": 775600,
+      "marginPercent": 61
+    },
+    {
+      "id": "fin_3",
+      "platformId": "douyin",
+      "platformName": "抖音爆款核心小店",
+      "salesVolume": 1385000,
+      "refundsVolume": 243900,
+      "adsExpense": 485000,
+      "platformFee": 69250,
+      "logisticsFee": 48000,
+      "netRevenue": 538850,
+      "marginPercent": 39
+    },
+    {
+      "id": "fin_4",
+      "platformId": "pinduoduo",
+      "platformName": "拼多多百亿补贴旗舰店",
+      "salesVolume": 825000,
+      "refundsVolume": 112000,
+      "adsExpense": 142000,
+      "platformFee": 8250,
+      "logisticsFee": 41000,
+      "netRevenue": 521750,
+      "marginPercent": 63
+    },
+    {
+      "id": "fin_5",
+      "platformId": "b2b_wholesale",
+      "platformName": "1688批发分销大客户号",
+      "salesVolume": 4850000,
+      "refundsVolume": 35000,
+      "adsExpense": 150000,
+      "platformFee": 24200,
+      "logisticsFee": 220000,
+      "netRevenue": 4420800,
+      "marginPercent": 91
+    }
+  ],
+  "hrStaff": [
+    {
+      "id": "101",
+      "name": "张美琳",
+      "role": "天猫VIP客服主管",
+      "platformGroup": "天猫联合大组",
+      "onlineStatus": "online",
+      "avgResponseSeconds": 9.4,
+      "satisfactionRate": 99.4,
+      "resolvedTicketsToday": 240,
+      "aiAssistedCount": 198
+    },
+    {
+      "id": "102",
+      "name": "刘星阳",
+      "role": "京东急速督办专员",
+      "platformGroup": "京东自营小组",
+      "onlineStatus": "online",
+      "avgResponseSeconds": 12.8,
+      "satisfactionRate": 98.6,
+      "resolvedTicketsToday": 185,
+      "aiAssistedCount": 122
+    },
+    {
+      "id": "103",
+      "name": "陈小希",
+      "role": "拼多多极致争议调解员",
+      "platformGroup": "拼多多综合售后部",
+      "onlineStatus": "break",
+      "avgResponseSeconds": 15.2,
+      "satisfactionRate": 96.2,
+      "resolvedTicketsToday": 290,
+      "aiAssistedCount": 245
+    },
+    {
+      "id": "104",
+      "name": "宋智贤",
+      "role": "抖音带货促复购专家",
+      "platformGroup": "抖音自播大本营",
+      "onlineStatus": "online",
+      "avgResponseSeconds": 11.5,
+      "satisfactionRate": 98.9,
+      "resolvedTicketsToday": 310,
+      "aiAssistedCount": 280
+    },
+    {
+      "id": "105",
+      "name": "赵铁柱",
+      "role": "B2B批发渠道专属售后顾问",
+      "platformGroup": "1688批发与线下商大组",
+      "onlineStatus": "offline",
+      "avgResponseSeconds": 45,
+      "satisfactionRate": 95,
+      "resolvedTicketsToday": 42,
+      "aiAssistedCount": 15
+    }
+  ],
+  "generalEmployees": [
+    {
+      "id": "emp_1",
+      "name": "李建国",
+      "department": "运营部",
+      "role": "资深跨平台运营专家",
+      "baseSalary": 18500,
+      "performanceScore": 92,
+      "attendanceRate": 99.2,
+      "joinedDate": "2023-03-15",
+      "status": "active",
+      "commissionRate": 1.5
+    },
+    {
+      "id": "emp_2",
+      "name": "王思萌",
+      "department": "市场部",
+      "role": "补货运营与抖音投手组长",
+      "baseSalary": 15000,
+      "performanceScore": 88,
+      "attendanceRate": 96.8,
+      "joinedDate": "2024-01-10",
+      "status": "active",
+      "commissionRate": 2
+    },
+    {
+      "id": "emp_3",
+      "name": "周博文",
+      "department": "技术研发",
+      "role": "智研大语言系统全栈架构师",
+      "baseSalary": 28000,
+      "performanceScore": 95,
+      "attendanceRate": 100,
+      "joinedDate": "2022-07-01",
+      "status": "active",
+      "commissionRate": 0
+    },
+    {
+      "id": "emp_4",
+      "name": "刘佳欣",
+      "department": "供应链物流",
+      "role": "干线分拨调度及质检督筹",
+      "baseSalary": 13800,
+      "performanceScore": 84,
+      "attendanceRate": 98.4,
+      "joinedDate": "2024-05-18",
+      "status": "probation",
+      "commissionRate": 0.8
+    },
+    {
+      "id": "emp_5",
+      "name": "沈静婉",
+      "department": "财务行政",
+      "role": "总账统筹与大促出纳专员",
+      "baseSalary": 12000,
+      "performanceScore": 90,
+      "attendanceRate": 99,
+      "joinedDate": "2021-11-20",
+      "status": "active",
+      "commissionRate": 0
+    }
+  ]
+}

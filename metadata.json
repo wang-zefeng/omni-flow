@@ -1,0 +1,6 @@
+{
+  "name": "Brand Dashboard & AI Workflows",
+  "description": "品牌全渠道(B2B/B2C)集成数据看板与多平台(天猫、天猫海外、京东、拼多多、抖音)AI自动化工作流系统",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

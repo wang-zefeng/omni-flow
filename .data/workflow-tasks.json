@@ -1,0 +1,40 @@
+{
+  "updatedAt": "2026-06-09T02:09:27.208Z",
+  "tasks": [
+    {
+      "id": "task-001",
+      "sourceAIInsightId": "ai-001",
+      "title": "复核拼多多家庭囤货清洁套组成本和活动价格",
+      "platform": "拼多多",
+      "productName": "家庭囤货清洁套组",
+      "owner": "李四",
+      "dueDate": "2026-06-01",
+      "status": "rejected",
+      "actionType": "cost_check",
+      "resultNote": "已完成复盘，待补充结果。"
+    },
+    {
+      "id": "task-002",
+      "sourceAIInsightId": "ai-002",
+      "title": "优化抖音夜间修护面膜首图卖点",
+      "platform": "抖音",
+      "productName": "夜间修护面膜",
+      "owner": "张三",
+      "dueDate": "2026-06-03",
+      "status": "reviewed",
+      "actionType": "content_optimization",
+      "resultNote": "已完成复盘，待补充结果。"
+    },
+    {
+      "id": "task-003",
+      "sourceAIInsightId": "ai-003",
+      "title": "补充天猫海外跨境旅行场景素材",
+      "platform": "天猫海外",
+      "productName": "便携旅行护理组",
+      "owner": "王五",
+      "dueDate": "2026-06-05",
+      "status": "accepted",
+      "actionType": "content_optimization"
+    }
+  ]
+}

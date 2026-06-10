@@ -1,0 +1,71 @@
+{
+  "updatedAt": "2026-05-27T00:00:00.000Z",
+  "connections": [
+    {
+      "id": "connection-tmall",
+      "channelType": "B2C",
+      "platform": "天猫",
+      "connectionMode": "CSV 导入",
+      "status": "已接入",
+      "owner": "天猫运营组",
+      "syncFrequency": "每日手动导入",
+      "lastSyncAt": "2026-05-27 09:18",
+      "nextAction": "校准天猫商品编码和品牌映射。"
+    },
+    {
+      "id": "connection-tmall-global",
+      "channelType": "B2C",
+      "platform": "天猫海外",
+      "connectionMode": "API 预留",
+      "status": "待配置",
+      "owner": "跨境运营组",
+      "syncFrequency": "每周导入",
+      "lastSyncAt": "暂无",
+      "nextAction": "确认跨境店铺数据导出字段。"
+    },
+    {
+      "id": "connection-jd",
+      "channelType": "B2C",
+      "platform": "京东",
+      "connectionMode": "CSV 导入",
+      "status": "已接入",
+      "owner": "京东运营组",
+      "syncFrequency": "每日手动导入",
+      "lastSyncAt": "2026-05-27 09:40",
+      "nextAction": "补充广告花费字段。"
+    },
+    {
+      "id": "connection-pdd",
+      "channelType": "B2C",
+      "platform": "拼多多",
+      "connectionMode": "API 预留",
+      "status": "待配置",
+      "owner": "拼多多运营组",
+      "syncFrequency": "每周导入",
+      "lastSyncAt": "暂无",
+      "nextAction": "先跑 CSV 模板，再评估 API 接入。"
+    },
+    {
+      "id": "connection-douyin",
+      "channelType": "B2C",
+      "platform": "抖音",
+      "connectionMode": "CSV 导入",
+      "status": "已接入",
+      "owner": "内容运营组",
+      "syncFrequency": "每日手动导入",
+      "lastSyncAt": "2026-05-27 10:06",
+      "nextAction": "补充直播间素材和投放数据。"
+    },
+    {
+      "id": "connection-b2b",
+      "channelType": "B2B",
+      "platform": "B2B 自定义",
+      "connectionMode": "CSV 导入",
+      "status": "已接入",
+      "owner": "渠道销售组",
+      "syncFrequency": "每周手动导入",
+      "lastSyncAt": "2026-05-27 11:42",
+      "nextAction": "统一经销商客户编码。"
+    }
+  ]
+}

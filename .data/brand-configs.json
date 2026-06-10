@@ -1,0 +1,65 @@
+{
+  "updatedAt": "2026-05-28T01:40:20.111Z",
+  "brands": [
+    {
+      "id": "brand-待确认公司-苏菲-拼多多",
+      "companyName": "待确认公司",
+      "brandName": "苏菲",
+      "channelType": "B2C",
+      "platform": "拼多多",
+      "owner": "待分配",
+      "status": "待接入",
+      "integrationMode": "API 预留"
+    },
+    {
+      "id": "brand-tsubaki-tmall",
+      "companyName": "资生堂",
+      "brandName": "丝蓓绮",
+      "channelType": "B2C",
+      "platform": "天猫",
+      "owner": "天猫运营组",
+      "status": "已接入",
+      "integrationMode": "CSV 导入"
+    },
+    {
+      "id": "brand-tsubaki-jd",
+      "companyName": "资生堂",
+      "brandName": "丝蓓绮",
+      "channelType": "B2C",
+      "platform": "京东",
+      "owner": "京东运营组",
+      "status": "已接入",
+      "integrationMode": "CSV 导入"
+    },
+    {
+      "id": "brand-sofy-tmall",
+      "companyName": "尤妮佳",
+      "brandName": "苏菲",
+      "channelType": "B2C",
+      "platform": "天猫",
+      "owner": "天猫运营组",
+      "status": "已接入",
+      "integrationMode": "CSV 导入"
+    },
+    {
+      "id": "brand-sofy-douyin",
+      "companyName": "尤妮佳",
+      "brandName": "苏菲",
+      "channelType": "B2C",
+      "platform": "抖音",
+      "owner": "内容运营组",
+      "status": "待接入",
+      "integrationMode": "API 预留"
+    },
+    {
+      "id": "brand-custom-b2b",
+      "companyName": "公司自有品牌",
+      "brandName": "渠道专供品牌",
+      "channelType": "B2B",
+      "platform": "B2B 自定义",
+      "owner": "渠道销售组",
+      "status": "已接入",
+      "integrationMode": "CSV 导入"
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "updatedAt": "2026-05-28T09:33:45.520Z",
+  "rules": [
+    {
+      "id": "rule-tmall-tsubaki-sales",
+      "name": "丝蓓绮天猫销售下滑分析",
+      "platform": "天猫",
+      "brandName": "丝蓓绮",
+      "workflowType": "sales_drop",
+      "enabled": true,
+      "triggerMetric": "GMV 环比变化",
+      "thresholdLabel": "下降超过 15%",
+      "frequency": "每日导入后",
+      "owner": "天猫运营组",
+      "humanReviewRequired": true
+    },
+    {
+      "id": "rule-pdd-sofy-refund",
+      "name": "苏菲拼多多退款异常分析",
+      "platform": "拼多多",
+      "brandName": "苏菲",
+      "workflowType": "refund_risk",
+      "enabled": true,
+      "triggerMetric": "退款率",
+      "thresholdLabel": "高于 8%",
+      "frequency": "每日导入后",
+      "owner": "拼多多运营组",
+      "humanReviewRequired": true
+    },
+    {
+      "id": "rule-douyin-sofy-content",
+      "name": "苏菲抖音素材优化建议",
+      "platform": "抖音",
+      "brandName": "苏菲",
+      "workflowType": "content_optimization",
+      "enabled": true,
+      "triggerMetric": "转化率",
+      "thresholdLabel": "低于 2%",
+      "frequency": "每周复盘",
+      "owner": "内容运营组",
+      "humanReviewRequired": true
+    },
+    {
+      "id": "rule-b2b-inventory",
+      "name": "B2B 渠道库存风险提醒",
+      "platform": "B2B 自定义",
+      "brandName": "渠道专供品牌",
+      "workflowType": "inventory_risk",
+      "enabled": false,
+      "triggerMetric": "连续缺货天数",
+      "thresholdLabel": "大于 3 天",
+      "frequency": "每周导入后",
+      "owner": "渠道销售组",
+      "humanReviewRequired": true
+    }
+  ]
+}
