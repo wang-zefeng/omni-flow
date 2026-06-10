@@ -41,6 +41,13 @@ function ensureDirectory(directory: string) {
   fs.mkdirSync(directory, { recursive: true });
 }
 
+export function normalizeMultipartFileName(fileName: string) {
+  if (!/[\u0080-\u009f]/.test(fileName)) return fileName;
+
+  const decoded = Buffer.from(fileName, "latin1").toString("utf8");
+  return decoded.includes("\uFFFD") ? fileName : decoded;
+}
+
 function sanitizeFileName(fileName: string) {
   const extension = path.extname(fileName);
   const baseName = path.basename(fileName, extension).replace(/[^a-zA-Z0-9._-]+/g, "-").slice(0, 80);
@@ -151,7 +158,10 @@ export function createTableUploadRouter(options: {
   const upload = multer({
     storage: multer.diskStorage({
       destination: uploadsDir,
-      filename: (_req, file, callback) => callback(null, sanitizeFileName(file.originalname)),
+      filename: (_req, file, callback) => {
+        file.originalname = normalizeMultipartFileName(file.originalname);
+        callback(null, sanitizeFileName(file.originalname));
+      },
     }),
     limits: { fileSize: MAX_FILE_SIZE, files: 1 },
     fileFilter: (_req, file, callback) => {
