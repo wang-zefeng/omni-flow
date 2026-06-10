@@ -882,17 +882,6 @@ export default function TableParsedBoardTab({
         </div>
       ) : null}
 
-      <TableAnalysisSummary data={uploadedFileBoardData} analysis={standardizedAnalysis} />
-
-      <UploadHistoryPanel
-        records={uploadRecords}
-        loading={isHistoryLoading}
-        error={historyError}
-        activeRecordId={uploadedFileBoardData.fileId}
-        onRestore={(id) => void handleRestoreRecord(id)}
-        onDelete={(id) => void handleDeleteRecord(id)}
-      />
-
       {/* 2. Key Dynamic Aggregate Cards auto-synced with the active Excel Sheet */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
@@ -1686,6 +1675,17 @@ export default function TableParsedBoardTab({
         </div>
 
       </div>
+
+      <TableAnalysisSummary data={uploadedFileBoardData} analysis={standardizedAnalysis} />
+
+      <UploadHistoryPanel
+        records={uploadRecords}
+        loading={isHistoryLoading}
+        error={historyError}
+        activeRecordId={uploadedFileBoardData.fileId}
+        onRestore={(id) => void handleRestoreRecord(id)}
+        onDelete={(id) => void handleDeleteRecord(id)}
+      />
 
       {/* 4. Tab List view */}
       <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-2xs space-y-4">

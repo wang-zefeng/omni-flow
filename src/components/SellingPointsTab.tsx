@@ -306,6 +306,37 @@ export default function SellingPointsTab() {
                 </div>
               </section>
 
+              <Section title="Agent内容生成" icon={<Lucide.WandSparkles className="w-4 h-4 text-cyan-700" />}>
+                <div className="grid lg:grid-cols-[210px_minmax(0,1fr)_auto] gap-3 items-end">
+                  <label className="block">
+                    <span className="block text-[10px] font-bold text-slate-500 mb-1.5">生成任务</span>
+                    <select value={taskType} onChange={(event) => setTaskType(event.target.value as SellingPointTaskType)} className="w-full h-9 px-3 border border-slate-200 rounded-md bg-white text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-100">
+                      {TASK_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                    </select>
+                  </label>
+                  <label className="block">
+                    <span className="block text-[10px] font-bold text-slate-500 mb-1.5">补充要求（可选）</span>
+                    <input value={userInstruction} onChange={(event) => setUserInstruction(event.target.value)} maxLength={2000} placeholder="例如：语气克制，突出适用场景" className="w-full h-9 px-3 border border-slate-200 rounded-md text-xs focus:outline-none focus:ring-2 focus:ring-cyan-100" />
+                  </label>
+                  <button type="button" onClick={() => void handleGenerate()} disabled={generating} className="h-9 px-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-xs font-bold flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer">
+                    {generating ? <Lucide.LoaderCircle className="w-4 h-4 animate-spin" /> : <Lucide.Play className="w-4 h-4" />}
+                    {generating ? "生成中" : "生成"}
+                  </button>
+                </div>
+                {generationError ? <div className="mt-3 p-3 bg-rose-50 border border-rose-100 rounded-md text-xs text-rose-700">{generationError}</div> : null}
+                {generationResult ? (
+                  <div className="mt-4 border border-slate-200 rounded-md overflow-hidden">
+                    <div className="px-3 py-2 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                      <span className="text-[10px] font-bold text-slate-500">生成结果</span>
+                      <button type="button" onClick={() => void handleCopy()} className="h-7 px-2 text-[10px] font-bold text-cyan-700 hover:bg-cyan-50 rounded-md flex items-center gap-1.5 cursor-pointer">
+                        <Lucide.Copy className="w-3.5 h-3.5" />{copyLabel}
+                      </button>
+                    </div>
+                    <pre className="p-4 text-xs leading-6 text-slate-700 whitespace-pre-wrap break-words font-sans max-h-[420px] overflow-y-auto">{generationResult}</pre>
+                  </div>
+                ) : null}
+              </Section>
+
               <Section title="商品基础信息" icon={<Lucide.PackageSearch className="w-4 h-4 text-cyan-700" />}>
                 <div className="grid sm:grid-cols-2 xl:grid-cols-5 gap-3">
                   <ValuePanel label="品牌" value={asset.basicInfo.brand} />
@@ -392,37 +423,6 @@ export default function SellingPointsTab() {
                 </Section>
               </div>
 
-              <Section title="渠道内容生成" icon={<Lucide.WandSparkles className="w-4 h-4 text-cyan-700" />}>
-                <div className="grid lg:grid-cols-[210px_minmax(0,1fr)_auto] gap-3 items-end">
-                  <label className="block">
-                    <span className="block text-[10px] font-bold text-slate-500 mb-1.5">生成任务</span>
-                    <select value={taskType} onChange={(event) => setTaskType(event.target.value as SellingPointTaskType)} className="w-full h-9 px-3 border border-slate-200 rounded-md bg-white text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-100">
-                      {TASK_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-                    </select>
-                  </label>
-                  <label className="block">
-                    <span className="block text-[10px] font-bold text-slate-500 mb-1.5">补充要求（可选）</span>
-                    <input value={userInstruction} onChange={(event) => setUserInstruction(event.target.value)} maxLength={2000} placeholder="例如：语气克制，突出适用场景" className="w-full h-9 px-3 border border-slate-200 rounded-md text-xs focus:outline-none focus:ring-2 focus:ring-cyan-100" />
-                  </label>
-                  <button type="button" onClick={() => void handleGenerate()} disabled={generating} className="h-9 px-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-xs font-bold flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer">
-                    {generating ? <Lucide.LoaderCircle className="w-4 h-4 animate-spin" /> : <Lucide.Play className="w-4 h-4" />}
-                    {generating ? "生成中" : "生成"}
-                  </button>
-                </div>
-
-                {generationError ? <div className="mt-3 p-3 bg-rose-50 border border-rose-100 rounded-md text-xs text-rose-700">{generationError}</div> : null}
-                {generationResult ? (
-                  <div className="mt-4 border border-slate-200 rounded-md overflow-hidden">
-                    <div className="px-3 py-2 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                      <span className="text-[10px] font-bold text-slate-500">生成结果</span>
-                      <button type="button" onClick={() => void handleCopy()} className="h-7 px-2 text-[10px] font-bold text-cyan-700 hover:bg-cyan-50 rounded-md flex items-center gap-1.5 cursor-pointer">
-                        <Lucide.Copy className="w-3.5 h-3.5" />{copyLabel}
-                      </button>
-                    </div>
-                    <pre className="p-4 text-xs leading-6 text-slate-700 whitespace-pre-wrap break-words font-sans max-h-[420px] overflow-y-auto">{generationResult}</pre>
-                  </div>
-                ) : null}
-              </Section>
             </>
           )}
         </div>

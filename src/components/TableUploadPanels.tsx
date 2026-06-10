@@ -1,4 +1,5 @@
 import * as Lucide from "lucide-react";
+import { useState } from "react";
 import type { TableAnalysisResult } from "../utils/tableAnalysis";
 import type { TableUploadRecordSummary, UploadedTableBoardData } from "../utils/tableUploadApi";
 
@@ -94,6 +95,10 @@ export function TableAnalysisSummary({
   analysis: TableAnalysisResult;
 }) {
   const metrics = analysis.metrics;
+  const [showFields, setShowFields] = useState(false);
+  const [showDateTrend, setShowDateTrend] = useState(false);
+  const [showDiagnostics, setShowDiagnostics] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const metricCards = [
     ["有效记录数", metrics.validRecordCount],
     ["总字段数", metrics.totalFieldCount],
@@ -131,7 +136,11 @@ export function TableAnalysisSummary({
       ) : null}
 
       <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-xs space-y-3">
-        <h3 className="text-sm font-bold text-slate-800">字段识别结果</h3>
+        <button type="button" onClick={() => setShowFields(!showFields)} className="flex items-center justify-between w-full text-left cursor-pointer">
+          <h3 className="text-sm font-bold text-slate-800">字段识别结果</h3>
+          <span className="text-[10px] text-slate-400">{showFields ? "收起 ▲" : "展开 ▼"}</span>
+        </button>
+        {showFields && (
         <div className="overflow-x-auto border border-slate-100 rounded-lg">
           <table className="w-full text-left text-xs min-w-[680px]">
             <thead className="bg-slate-50 text-slate-500">
@@ -144,6 +153,7 @@ export function TableAnalysisSummary({
             </tbody>
           </table>
         </div>
+        )}
       </div>
 
       {analysis.topDimensions.length > 0 ? (
@@ -164,17 +174,26 @@ export function TableAnalysisSummary({
 
       {analysis.dateTrend.length > 0 ? (
         <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-xs space-y-3">
-          <h3 className="text-sm font-bold text-slate-800">日期趋势汇总</h3>
+          <button type="button" onClick={() => setShowDateTrend(!showDateTrend)} className="flex items-center justify-between w-full text-left cursor-pointer">
+            <h3 className="text-sm font-bold text-slate-800">日期趋势汇总</h3>
+            <span className="text-[10px] text-slate-400">{showDateTrend ? "收起 ▲" : "展开 ▼"}</span>
+          </button>
+          {showDateTrend && (
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2 max-h-64 overflow-y-auto">
             {analysis.dateTrend.map((item) => (
               <div key={item.date} className="p-3 rounded-lg bg-slate-50 border border-slate-100"><strong className="text-xs text-slate-700">{item.date}</strong><span className="block text-[10px] text-slate-500 mt-1">{formatNumber(item.amount)} · {item.recordCount} 条</span></div>
             ))}
           </div>
+          )}
         </div>
       ) : null}
 
       <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-xs space-y-3">
-        <h3 className="text-sm font-bold text-slate-800">异常诊断</h3>
+        <button type="button" onClick={() => setShowDiagnostics(!showDiagnostics)} className="flex items-center justify-between w-full text-left cursor-pointer">
+          <h3 className="text-sm font-bold text-slate-800">异常诊断</h3>
+          <span className="text-[10px] text-slate-400">{showDiagnostics ? "收起 ▲" : "展开 ▼"}</span>
+        </button>
+        {showDiagnostics && (
         <div className="space-y-2">
           {analysis.diagnostics.map((diagnostic) => (
             <div key={diagnostic.id} className={`p-3 rounded-lg border text-xs ${diagnostic.severity === "danger" ? "bg-rose-50 border-rose-100 text-rose-800" : diagnostic.severity === "warning" ? "bg-amber-50 border-amber-100 text-amber-800" : "bg-sky-50 border-sky-100 text-sky-800"}`}>
@@ -184,16 +203,22 @@ export function TableAnalysisSummary({
             </div>
           ))}
         </div>
+        )}
       </div>
 
       <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-xs space-y-3">
-        <div><h3 className="text-sm font-bold text-slate-800">数据预览</h3><p className="text-[10px] text-slate-400 mt-0.5">默认展示前 {Math.min(data.rows.length, 50)} 行</p></div>
+        <button type="button" onClick={() => setShowPreview(!showPreview)} className="flex items-center justify-between w-full text-left cursor-pointer">
+          <div><h3 className="text-sm font-bold text-slate-800">数据预览</h3><p className="text-[10px] text-slate-400 mt-0.5">默认展示前 {Math.min(data.rows.length, 50)} 行</p></div>
+          <span className="text-[10px] text-slate-400">{showPreview ? "收起 ▲" : "展开 ▼"}</span>
+        </button>
+        {showPreview && (
         <div className="overflow-auto max-h-[420px] border border-slate-100 rounded-lg">
           <table className="w-full text-left text-xs min-w-[760px]">
             <thead className="bg-slate-50 text-slate-500 sticky top-0"><tr>{data.headers.map((header) => <th key={header} className="px-3 py-2 whitespace-nowrap">{header}</th>)}</tr></thead>
             <tbody className="divide-y divide-slate-100">{data.rows.slice(0, 50).map((row, index) => <tr key={index}>{data.headers.map((header) => <td key={header} className="px-3 py-2 whitespace-nowrap text-slate-600">{String(row?.[header] ?? "-")}</td>)}</tr>)}</tbody>
           </table>
         </div>
+        )}
       </div>
     </section>
   );
