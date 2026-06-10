@@ -1541,7 +1541,7 @@ export default function TableParsedBoardTab({
             <div>
               <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
                 <Lucide.Sparkles className="w-4 h-4 text-purple-600 animate-pulse" />
-                Gemini 报表精算决策智脑 (Interactive AI Copilot)
+                DeepSeek 报表精算决策智脑 (Interactive AI Copilot)
               </h3>
               <p className="text-[10px] text-slate-400 mt-0.5">
                 深度穿透当前工作表，支持单工作表极速红线诊断以及多维度自由对话咨询。
@@ -1624,7 +1624,7 @@ export default function TableParsedBoardTab({
               <div className="py-12 text-center flex flex-col items-center justify-center space-y-3">
                 <Lucide.Loader2 className="w-6 h-6 text-indigo-600 animate-spin" />
                 <div className="space-y-1">
-                  <p className="text-xs font-bold text-slate-700">Gemini 正在穿透解析数据并核算...</p>
+                  <p className="text-xs font-bold text-slate-700">AI 正在穿透解析数据并核算...</p>
                   <p className="text-[9px] text-slate-400">正在对比 Sheet 【{currentSheet?.name || "默认"}】 的交易级细节指标</p>
                 </div>
               </div>

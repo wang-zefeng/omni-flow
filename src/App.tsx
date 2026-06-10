@@ -497,7 +497,7 @@ export default function App() {
     await addLog(`COGNITIVE INTENT ANALYSIS: Matching platform attributes for ${selectedPlatformId.toUpperCase()}...`, 500);
     await addLog(`CONTEXTUAL SYNAPSE GATHERING: Crawling inventory counts, sales velocities and margins...`, 500);
     await addLog(`POLICY VERIFICATION: Checking against ${selectedWorkflow.id === "customer-reply" ? "违禁词过滤与客情自恰" : "各平台SEO/大促审核规范"}...`, 500);
-    await addLog(`GEMINI CORE INFERENCE: Calling Google Gemini model via secure server-side proxy...`, 650);
+    await addLog(`AI CORE INFERENCE: Calling DeepSeek model via secure server-side proxy...`, 650);
 
     const platformNameObj = (globalDataSource === "sandbox" ? sandboxPlatformList : platformList).find(p => p.id === selectedPlatformId);
     const platformName = platformNameObj ? platformNameObj.name : "全渠道中控后台";
@@ -577,7 +577,7 @@ export default function App() {
     const getNowTime = () => new Date().toLocaleTimeString("zh-CN");
     setTerminalLogs([
       `⏱️ [${getNowTime()}] NL ROUTER ATTACHED: Received live input.`,
-      `🧠 [${getNowTime()}] INTENT CLASSIFICATION: Querying Gemini dispatch directory...`
+      `🧠 [${getNowTime()}] INTENT CLASSIFICATION: Querying DeepSeek dispatch directory...`
     ]);
 
     const addLog = (msg: string, delay: number) => {
@@ -939,7 +939,7 @@ export default function App() {
               数字化 Agent 工作室
             </span>
             <span className="bg-emerald-100 text-emerald-800 text-[9px] px-1.5 py-0.5 rounded font-mono font-bold">
-              Gemini
+              DeepSeek
             </span>
           </button>
 
@@ -1690,7 +1690,7 @@ export default function App() {
                             <div className="flex items-center gap-2 bg-white rounded-lg p-2 border border-slate-100">
                               <span className="h-4 w-4 rounded-full bg-indigo-100 text-indigo-700 text-[9px] flex items-center justify-center font-bold">2</span>
                               <div className="truncate">
-                                触发 **Gemini 异构交叉规则判定**
+                                触发 **DeepSeek 异构交叉规则判定**
                               </div>
                             </div>
 

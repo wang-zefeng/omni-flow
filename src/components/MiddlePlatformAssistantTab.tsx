@@ -395,7 +395,7 @@ export default function MiddlePlatformAssistantTab({
                   <Lucide.BrainCircuit className="w-10 h-10 text-slate-600 stroke-1 block" />
                   <p className="font-semibold text-slate-400 text-xs">智能数据中台战略决策舱等待激发</p>
                   <p className="text-[10px] text-slate-600 max-w-[210px] mx-auto">
-                    请在左侧选择审计维度、或是点击黄金大促快捷诊断，我们将通过 Gemini 大脑归因各大平台的利润泄露漏洞和短缺危机！
+                    请在左侧选择审计维度、或是点击黄金大促快捷诊断，我们将通过 AI 大数据大脑归因各大平台的利润泄露漏洞和短缺危机！
                   </p>
                 </div>
               )}
