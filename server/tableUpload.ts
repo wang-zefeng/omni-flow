@@ -35,6 +35,12 @@ export type UploadRecord = {
 };
 
 const SUPPORTED_EXTENSIONS = new Set([".xlsx", ".xls", ".csv", ".json"]);
+const MIME_TYPES_BY_EXTENSION: Record<string, Set<string>> = {
+  ".xlsx": new Set(["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"]),
+  ".xls": new Set(["application/vnd.ms-excel"]),
+  ".csv": new Set(["text/csv", "application/csv", "application/vnd.ms-excel", "text/plain"]),
+  ".json": new Set(["application/json", "text/json", "text/plain"]),
+};
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
 function ensureDirectory(directory: string) {
@@ -48,10 +54,14 @@ export function normalizeMultipartFileName(fileName: string) {
   return decoded.includes("\uFFFD") ? fileName : decoded;
 }
 
-function sanitizeFileName(fileName: string) {
-  const extension = path.extname(fileName);
-  const baseName = path.basename(fileName, extension).replace(/[^a-zA-Z0-9._-]+/g, "-").slice(0, 80);
-  return `${baseName || "table"}-${Date.now()}-${randomUUID().slice(0, 8)}${extension.toLowerCase()}`;
+export function isSupportedUploadType(fileName: string, mimeType: string) {
+  const extension = path.extname(fileName).toLowerCase();
+  const normalizedMimeType = mimeType.toLowerCase().split(";", 1)[0].trim();
+  return SUPPORTED_EXTENSIONS.has(extension) && Boolean(MIME_TYPES_BY_EXTENSION[extension]?.has(normalizedMimeType));
+}
+
+function createStoredFileName(fileName: string) {
+  return `${randomUUID()}${path.extname(fileName).toLowerCase()}`;
 }
 
 function isMeaningfulHeaderRow(rawHeaders: unknown[]) {
@@ -158,23 +168,23 @@ export function createTableUploadRouter(options: {
   const upload = multer({
     storage: multer.diskStorage({
       destination: uploadsDir,
-      filename: (_req, file, callback) => {
-        file.originalname = normalizeMultipartFileName(file.originalname);
-        callback(null, sanitizeFileName(file.originalname));
-      },
+      filename: (_req, file, callback) => callback(null, createStoredFileName(file.originalname)),
     }),
     limits: { fileSize: MAX_FILE_SIZE, files: 1 },
     fileFilter: (_req, file, callback) => {
+      file.originalname = normalizeMultipartFileName(file.originalname);
       const extension = path.extname(file.originalname).toLowerCase();
-      if (!SUPPORTED_EXTENSIONS.has(extension)) {
-        callback(new Error(`不支持的文件格式：${extension || "未知"}。仅支持 .xlsx、.xls、.csv、.json。`));
+      if (!isSupportedUploadType(file.originalname, file.mimetype)) {
+        callback(new Error(
+          `不支持的文件类型：${extension || "未知"} / ${file.mimetype || "未知 MIME"}。仅支持有效的 .xlsx、.xls、.csv、.json 文件。`
+        ));
         return;
       }
       callback(null, true);
     },
   });
 
-  let writeQueue: Promise<void> = Promise.resolve();
+  let recordsQueue: Promise<void> = Promise.resolve();
 
   function readRecords(): UploadRecord[] {
     if (!fs.existsSync(recordsFile)) return [];
@@ -191,9 +201,9 @@ export function createTableUploadRouter(options: {
     fs.renameSync(tempFile, recordsFile);
   }
 
-  function queueRecordUpdate<T>(operation: () => T | Promise<T>): Promise<T> {
-    const result = writeQueue.then(operation, operation);
-    writeQueue = result.then(() => undefined, () => undefined);
+  function withRecordsLock<T>(operation: () => T | Promise<T>): Promise<T> {
+    const result = recordsQueue.then(operation, operation);
+    recordsQueue = result.then(() => undefined, () => undefined);
     return result;
   }
 
@@ -234,7 +244,7 @@ export function createTableUploadRouter(options: {
         status: "parsed",
       };
 
-      await queueRecordUpdate(() => {
+      await withRecordsLock(() => {
         const records = readRecords();
         records.unshift(record);
         writeRecords(records);
@@ -248,20 +258,22 @@ export function createTableUploadRouter(options: {
     }
   });
 
-  router.get("/table/records", (_req, res) => {
+  router.get("/table/records", async (_req, res) => {
     try {
-      const records = readRecords()
-        .sort((left, right) => right.uploadedAt.localeCompare(left.uploadedAt))
-        .map(({ previewRows: _previewRows, ...summary }) => summary);
+      const records = await withRecordsLock(() =>
+        readRecords()
+          .sort((left, right) => right.uploadedAt.localeCompare(left.uploadedAt))
+          .map(({ previewRows: _previewRows, ...summary }) => summary)
+      );
       return res.json({ records });
     } catch (error) {
       return res.status(500).json({ error: error instanceof Error ? error.message : "历史记录读取失败。" });
     }
   });
 
-  router.get("/table/records/:id", (req, res) => {
+  router.get("/table/records/:id", async (req, res) => {
     try {
-      const record = readRecords().find((item) => item.id === req.params.id);
+      const record = await withRecordsLock(() => readRecords().find((item) => item.id === req.params.id));
       if (!record) return res.status(404).json({ error: "上传记录不存在或已被删除。" });
       return res.json({ record });
     } catch (error) {
@@ -271,7 +283,7 @@ export function createTableUploadRouter(options: {
 
   router.delete("/table/records/:id", async (req, res) => {
     try {
-      const deleted = await queueRecordUpdate(() => {
+      const deleted = await withRecordsLock(() => {
         const records = readRecords();
         const nextRecords = records.filter((item) => item.id !== req.params.id);
         if (nextRecords.length === records.length) return false;
