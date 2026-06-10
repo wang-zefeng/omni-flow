@@ -10,6 +10,7 @@ import GeneralHRTab from "./components/GeneralHRTab";
 import MiddlePlatformAssistantTab from "./components/MiddlePlatformAssistantTab";
 import ImportMappingModal from "./components/ImportMappingModal";
 import TableParsedBoardTab from "./components/TableParsedBoardTab";
+import SellingPointsTab from "./components/SellingPointsTab";
 import type { UploadedTableBoardData } from "./utils/tableUploadApi";
 import UnqWebsiteLogo from "./components/UnqWebsiteLogo";
 import OperationsIntegrationTab from "./components/OperationsIntegrationTab";
@@ -29,7 +30,7 @@ type AuthState = {
 
 export default function App() {
   const [activeTab, setActiveTab ] = useState<
-    "dashboard" | "workflows" | "supply_chain" | "finance" | "hr" | "general_hr" | "middle_platform" | "table_parsed_board" | "operations_integration"
+    "dashboard" | "workflows" | "supply_chain" | "finance" | "hr" | "general_hr" | "middle_platform" | "table_parsed_board" | "selling_points" | "operations_integration"
   >("dashboard");
   
   // -------------------------------------------------------------
@@ -925,6 +926,23 @@ export default function App() {
             )}
           </button>
 
+          <button
+            onClick={() => setActiveTab("selling_points")}
+            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              activeTab === "selling_points"
+                ? "bg-cyan-50 text-cyan-800 font-bold border-l-2 border-cyan-600"
+                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+            }`}
+          >
+            <span className="flex items-center gap-3">
+              <Lucide.LibraryBig className={`w-4 h-4 ${activeTab === "selling_points" ? "text-cyan-700" : "text-slate-400"}`} />
+              商品卖点知识库
+            </span>
+            <span className="bg-cyan-100 text-cyan-800 text-[9px] px-1.5 py-0.5 rounded font-mono font-bold">
+              JSON
+            </span>
+          </button>
+
           {/* Menu Item 2: AI Workflows Runner */}
           <button
             onClick={() => setActiveTab("workflows")}
@@ -1152,6 +1170,7 @@ export default function App() {
               {activeTab === "hr" && "大促线上客服组能效考核"}
               {activeTab === "general_hr" && "全集团人事组织架构与弹性绩效结算"}
               {activeTab === "table_parsed_board" && "中台异构表格解析映射工作部"}
+              {activeTab === "selling_points" && "商品卖点知识库"}
             </h1>
             
             <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${
@@ -1246,6 +1265,8 @@ export default function App() {
             />
           ) : activeTab === "operations_integration" ? (
             <OperationsIntegrationTab />
+          ) : activeTab === "selling_points" ? (
+            <SellingPointsTab />
           ) : activeTab === "table_parsed_board" ? (
             <TableParsedBoardTab
               uploadedFileBoardData={uploadedFileBoardData}

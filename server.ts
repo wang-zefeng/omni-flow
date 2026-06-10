@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { generateAI } from "./ai-service";
 import { createServerAuth } from "./server/auth";
 import { createOpsIntegrationRouter } from "./server/opsIntegration";
+import { createSellingPointsRouter } from "./server/sellingPoints";
 import { createTableUploadRouter } from "./server/tableUpload";
 
 dotenv.config();
@@ -428,6 +429,7 @@ app.post("/api/auth/logout", auth.logoutHandler);
 app.use("/api", auth.requireApiAccess);
 app.use("/api", createOpsIntegrationRouter({ appDataDir: APP_DATA_DIR }));
 app.use("/api", createTableUploadRouter());
+app.use("/api", createSellingPointsRouter());
 
 // API Route 2: Get active platform data
 app.get("/api/platform-data", (req, res) => {
